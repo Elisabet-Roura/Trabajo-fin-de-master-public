@@ -1,0 +1,69 @@
+
+#Descargar genoma humano versión hg19 a partir de la linea de comandos
+
+wget https://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/hg19.fa.gz
+
+#para descompirmir instruccions aqui : https://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/
+gunzip file.fa.gz
+
+#para abrir ficheros comprimidos 
+zcat nombrearchivo
+
+# per generar un fitxer sam a partir dels fastQ
+#se mapean respecto al genoma de referencia que introducimos (hg19) y se maepan los dos reads de cada muestra (el forward y el reverse)
+bwa mem ~/tfm_eli/hg19/hg19.fa ~/FASTQ/RUN20190222-CGC63002/RB23049_S5_L001_R1_001.fastq.gz  ~/FASTQ/RUN20190222-CGC63002/RB23049_S5_L001_R2_001.fastq.gz -t 4 > ~/tfm_eli/RB23049.sam
+
+#generamos un fichero de salida con formato SAM (.sam)
+# -t 4 para emplear 4 cpus
+
+#La salida de el fichero sam es: MAPQ (0-60), cigar, 
+
+#05/02/25
+
+#Tornar a descarregar genoma pero ara versio hg38, mateix proces que amb hg19
+#generar index 
+bwm index file.fa 
+
+
+#Descarregar docker 
+#indicacions https://www.kubelynx.com/article/how-install-docker-ubuntu-2404
+# systemtcl serveix per saber administrar servicios, comprobar estados, cambiar estados del sistema y trabajar con los archivos de configuración., per sortir ctrl + C
+
+#Descarregar IGV ntegrative Genomics Viewer 
+https://igv.org/doc/desktop/#DownloadPage/
+
+#06/02·25
+
+#Tot el proces que s'ha de fer de SAM a Bam amb samtools
+
+samtools view -bS RB23049.sam > RB23049.bam
+samtools sort -T TEST RB23049.bam -o RB23049.sorted.bam 
+samtools index RB23049.sorted.bam 
+samtools view RB23049.sorted.bam chrM
+
+
+#Para abrir IGV 
+
+cd IGV_Linux_2.19.1_WithJava/
+cd IGV_Linux_2.19.1/
+sh igv.sh
+
+#Instalación GATK 
+https://hub.docker.com/r/broadinstitute/gatk/
+
+#fastaqc
+sudo apt -y install fastqc
+
+#para instalar fastp he fet servir el mateix codi
+
+#installar PICARD
+#https://broadinstitute.github.io/picard/
+
+java -jar /path/to/picard.jar -h 
+java -jar $PICARD -h 
+
+
+#instalació de VEP
+#http://www.ensembl.org/info/docs/tools/vep/script/vep_download.html#docker
+docker pull ensemblorg/ensembl-vep
+
